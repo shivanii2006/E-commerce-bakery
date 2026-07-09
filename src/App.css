@@ -1,0 +1,68 @@
+/* ============================= */
+/* Global Reset + Variables      */
+/* ============================= */
+:root {
+  --color-bg: #ffffff;   /* Replace with your Figma background color */
+  --color-text: #333333; /* Replace with your Figma text color */
+  --color-primary: #ff6b6b; /* Example accent color, update from Figma */
+  --font-family: 'Poppins', sans-serif; /* Replace with your Figma font */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ============================= */
+/* Navbar Styles                 */
+/* ============================= */
+header {
+  display: flex;
+  justify-content: space-between; /* logo on the left, links on the right */
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--color-bg);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #eee; /* optional, matches Figma clean look */
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem; /* spacing between links */
+  list-style: none;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: var(--color-text);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  color: var(--color-primary);
+}
+
+/* ============================= */
+/* Utility Classes               */
+/* ============================= */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
