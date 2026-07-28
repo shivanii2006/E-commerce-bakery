@@ -130,3 +130,115 @@ body {
   width: 100%;
   border-radius: 8px;
 }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEMS
+   ========================================================================== */
+
+/* Responsive Header styling */
+.app-header {
+  background: #8b5e34;
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  justify-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Tablets and medium screens */
+@media (max-width: 1024px) {
+  .app-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 15px;
+    text-align: center;
+    position: relative; /* Change from sticky to relative so it scrolls away naturally! */
+    top: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .app-header nav {
+    justify-content: center;
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .collection-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+/* Mobile Screens */
+@media (max-width: 600px) {
+  .collection-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 15px;
+  }
+  
+  .app-header {
+    padding: 10px;
+    position: relative; /* Keep relative on mobile so it scrolls away */
+    top: auto;
+  }
+  
+  .app-header nav {
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 4px 0;
+  }
+
+  .app-header nav a {
+    margin: 0 8px !important;
+    font-size: 15px !important;
+  }
+
+  .app-header div {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px !important;
+  }
+  
+  .app-header div input {
+    width: 100% !important;
+    max-width: 240px;
+  }
+}
+
+/* Landing Page Hero Responsiveness */
+.hero-title {
+  font-size: 3.5rem;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.2rem !important;
+    text-align: center;
+  }
+  .hero-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    justify-content: center !important;
+  }
+  .detail-image {
+    height: 320px !important;
+  }
+}

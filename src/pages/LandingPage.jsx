@@ -10,6 +10,7 @@ function LandingPage() {
     <div>
       {/* Hero Section */}
       <div
+        className="hero-container"
         style={{
           backgroundImage: `url(${landingBg})`,
           backgroundSize: "cover",
@@ -24,8 +25,8 @@ function LandingPage() {
         }}
       >
         <h1
+          className="hero-title"
           style={{
-            fontSize: "3.5rem",
             textShadow: `
               -2px -2px 0 #000,  
               2px -2px 0 #000,  
@@ -44,16 +45,7 @@ function LandingPage() {
           Our Sweet Collection
         </h2>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "30px",
-            justifyItems: "center",
-            maxWidth: "1000px",
-            margin: "0 auto",
-          }}
-        >
+        <div className="collection-grid">
           {/* Cakes */}
           <Link to="/products" style={{ textDecoration: "none", color: "inherit" }}>
             <div className="hover-card"

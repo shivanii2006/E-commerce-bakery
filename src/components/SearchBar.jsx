@@ -1,21 +1,19 @@
-// src/components/SearchBar.jsx
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { products as allProducts } from "../pages/ProductsPage";
+import { STATIC_PRODUCTS, getResolvedImage } from "../pages/ProductsPage";
 
-function slugify(name) {
-  return name.toLowerCase().replace(/\s+/g, "-");
-}
-
-export default function SearchBar() {
+export default function SearchBar({ setSearchQuery }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [hits, setHits] = useState([]);
   const blurTimer = useRef(null);
 
-  const onChange = (e) => {
+  const onChange = async (e) => {
     const v = e.target.value;
     setQ(v);
+    if (setSearchQuery) {
+      setSearchQuery(v.toLowerCase());
+    }
 
     if (!v.trim()) {
       setHits([]);
@@ -23,13 +21,36 @@ export default function SearchBar() {
       return;
     }
 
-    const filtered = allProducts.filter(
-      (p) =>
-        p.name.toLowerCase().includes(v.toLowerCase()) ||
-        p.category.toLowerCase().includes(v.toLowerCase())
-    );
-    setHits(filtered);
-    setOpen(filtered.length > 0);
+    try {
+      const res = await fetch(`/api/products?search=${encodeURIComponent(v)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const mapped = data.map(item => ({
+          ...item,
+          image: getResolvedImage(item.image, item.slug)
+        }));
+        setHits(mapped);
+        setOpen(mapped.length > 0);
+      } else {
+        // Fallback to static catalog search
+        const filtered = STATIC_PRODUCTS.filter(
+          (p) =>
+            p.name.toLowerCase().includes(v.toLowerCase()) ||
+            p.category.toLowerCase().includes(v.toLowerCase())
+        );
+        setHits(filtered);
+        setOpen(filtered.length > 0);
+      }
+    } catch (error) {
+      // Fallback to static catalog search
+      const filtered = STATIC_PRODUCTS.filter(
+        (p) =>
+          p.name.toLowerCase().includes(v.toLowerCase()) ||
+          p.category.toLowerCase().includes(v.toLowerCase())
+      );
+      setHits(filtered);
+      setOpen(filtered.length > 0);
+    }
   };
 
   const onFocus = () => {
@@ -37,13 +58,12 @@ export default function SearchBar() {
   };
 
   const onBlur = () => {
-    // Delay so a click on a suggestion still registers
-    blurTimer.current = setTimeout(() => setOpen(false), 120);
+    blurTimer.current = setTimeout(() => setOpen(false), 150);
   };
 
   return (
-    <div style={{ position: "relative", width: 320 }}>
-      {/* Input wrapper: transparent, white border, oval */}
+    <div style={{ position: "relative", width: 280 }}>
+      {/* Input wrapper */}
       <div
         style={{
           display: "flex",
@@ -52,10 +72,9 @@ export default function SearchBar() {
           border: "1px solid #fff",
           borderRadius: 999,
           padding: "8px 14px",
-          background: "transparent",
+          background: "rgba(255, 255, 255, 0.1)",
         }}
       >
-        {/* Magnifying glass (inline SVG so no extra deps) */}
         <svg
           width="18"
           height="18"
@@ -77,15 +96,14 @@ export default function SearchBar() {
           onChange={onChange}
           onFocus={onFocus}
           onBlur={onBlur}
-          placeholder="Search for anything"
+          placeholder="Search cakes, cookies..."
           style={{
             flex: 1,
             background: "transparent",
             border: "none",
             outline: "none",
-            color: "white",         // input text is white
+            color: "white",
             fontSize: 14,
-            // placeholder remains grey (you said that's fine)
           }}
         />
       </div>
@@ -104,12 +122,12 @@ export default function SearchBar() {
             overflow: "hidden",
             zIndex: 9999,
           }}
-          onMouseDown={(e) => e.preventDefault()} // keep focus until click handled
+          onMouseDown={(e) => e.preventDefault()}
         >
           {hits.map((item) => (
             <Link
-              key={item.name}
-              to={`/product/${slugify(item.name)}`}
+              key={item.id || item.slug}
+              to={`/product/${item.slug}`}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -136,9 +154,9 @@ export default function SearchBar() {
                   flexShrink: 0,
                 }}
               />
-              <div>
-                <div style={{ fontWeight: 600 }}>{item.name}</div>
-                <div style={{ fontSize: 12, color: "#666" }}>{item.category}</div>
+              <div style={{ textAlign: "left" }}>
+                <div style={{ fontWeight: 600, fontSize: 14 }}>{item.name}</div>
+                <div style={{ fontSize: 11, color: "#666" }}>{item.category} • ₹{item.price}</div>
               </div>
             </Link>
           ))}

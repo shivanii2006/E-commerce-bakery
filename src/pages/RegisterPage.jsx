@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginBg from "../assets/login-bg.jpg";
 
-function LoginPage({ onLoginSuccess }) {
+function RegisterPage({ onLoginSuccess }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -12,13 +14,18 @@ function LoginPage({ onLoginSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match");
+    }
+
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
@@ -31,17 +38,13 @@ function LoginPage({ onLoginSuccess }) {
           onLoginSuccess(data.user);
         }
 
-        // Redirect based on role
-        if (data.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
+        // Redirect to homepage
+        navigate("/");
       } else {
-        setError(data.message || "Invalid email or password");
+        setError(data.message || "Registration failed. Please try again.");
       }
     } catch (err) {
-      console.error("Login request failed:", err);
+      console.error("Registration request failed:", err);
       setError("Server connection failed. Please try again later.");
     } finally {
       setLoading(false);
@@ -75,10 +78,10 @@ function LoginPage({ onLoginSuccess }) {
         }}
       >
         <h2 style={{ marginBottom: "10px", color: "#8b5e34", fontFamily: "'Playfair Display', serif" }}>
-          Welcome Back
+          Create Account
         </h2>
         <p style={{ color: "#666", fontSize: "14px", marginBottom: "25px" }}>
-          Log in to manage your orders and profile
+          Register to order your favorite treats!
         </p>
 
         {error && (
@@ -97,6 +100,27 @@ function LoginPage({ onLoginSuccess }) {
             {error}
           </div>
         )}
+
+        <div style={{ marginBottom: "15px", textAlign: "left" }}>
+          <label style={{ fontSize: "13px", fontWeight: "600", color: "#555" }}>Full Name</label>
+          <input
+            type="text"
+            placeholder="John Doe"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{
+              width: "100%",
+              margin: "5px 0 0 0",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              boxSizing: "border-box",
+              fontSize: "15px",
+              outline: "none",
+            }}
+          />
+        </div>
 
         <div style={{ marginBottom: "15px", textAlign: "left" }}>
           <label style={{ fontSize: "13px", fontWeight: "600", color: "#555" }}>Email Address</label>
@@ -119,7 +143,7 @@ function LoginPage({ onLoginSuccess }) {
           />
         </div>
 
-        <div style={{ marginBottom: "20px", textAlign: "left" }}>
+        <div style={{ marginBottom: "15px", textAlign: "left" }}>
           <label style={{ fontSize: "13px", fontWeight: "600", color: "#555" }}>Password</label>
           <input
             type="password"
@@ -127,6 +151,27 @@ function LoginPage({ onLoginSuccess }) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            style={{
+              width: "100%",
+              margin: "5px 0 0 0",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              boxSizing: "border-box",
+              fontSize: "15px",
+              outline: "none",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "20px", textAlign: "left" }}>
+          <label style={{ fontSize: "13px", fontWeight: "600", color: "#555" }}>Confirm Password</label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             style={{
               width: "100%",
               margin: "5px 0 0 0",
@@ -157,13 +202,13 @@ function LoginPage({ onLoginSuccess }) {
             boxShadow: "0 4px 6px rgba(139, 94, 52, 0.2)",
           }}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Registering..." : "Register"}
         </button>
 
         <p style={{ marginTop: "20px", fontSize: "14px", color: "#555" }}>
-          Don't have an account?{" "}
-          <Link to="/register" style={{ color: "#8b5e34", fontWeight: "bold", textDecoration: "none" }}>
-            Register here
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: "#8b5e34", fontWeight: "bold", textDecoration: "none" }}>
+            Login here
           </Link>
         </p>
       </form>
@@ -171,4 +216,4 @@ function LoginPage({ onLoginSuccess }) {
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
