@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard({ user }) {
@@ -34,13 +34,14 @@ export default function AdminDashboard({ user }) {
   const token = localStorage.getItem("token");
 
   // Redirect if not admin
-  useEffect(() => {
-    if (!user || user.role !== "admin") {
-      navigate("/login");
-    }
-  }, [user, navigate]);
+useEffect(() => {
+  if (user && user.role === "admin") {
+    fetchProducts();
+    fetchOrders();
+  }
+}, [user, fetchOrders]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoadingProducts(true);
     try {
       const res = await fetch("/api/products");
@@ -53,7 +54,7 @@ export default function AdminDashboard({ user }) {
     } finally {
       setLoadingProducts(false);
     }
-  };
+  },[token]);
 
   const fetchOrders = async () => {
     setLoadingOrders(true);
