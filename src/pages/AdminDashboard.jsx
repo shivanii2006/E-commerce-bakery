@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard({ user }) {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("stats");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -33,14 +31,6 @@ export default function AdminDashboard({ user }) {
   // Token for authenticated API calls
   const token = localStorage.getItem("token");
 
-  // Redirect if not admin
-useEffect(() => {
-  if (user && user.role === "admin") {
-    fetchProducts();
-    fetchOrders();
-  }
-}, [user, fetchOrders]);
-
   const fetchProducts = useCallback(async () => {
     setLoadingProducts(true);
     try {
@@ -54,9 +44,9 @@ useEffect(() => {
     } finally {
       setLoadingProducts(false);
     }
-  },[token]);
+  }, []);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoadingOrders(true);
     try {
       const res = await fetch("/api/orders", {
@@ -73,14 +63,15 @@ useEffect(() => {
     } finally {
       setLoadingOrders(false);
     }
-  };
+  }, [token]);
 
+  // Fetch products and orders if user is admin
   useEffect(() => {
     if (user && user.role === "admin") {
       fetchProducts();
       fetchOrders();
     }
-  }, [user]);
+  }, [user, fetchProducts, fetchOrders]);
 
   // Handle product form input change
   const handleProductInputChange = (e) => {
