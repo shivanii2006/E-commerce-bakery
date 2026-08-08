@@ -16,7 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
+const uploadsPath = isVercel ? '/tmp/uploads' : path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -45,7 +47,11 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Uploaded images served at http://localhost:${PORT}/uploads/`);
-});
+if (require.main === module || !isVercel) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Uploaded images served at http://localhost:${PORT}/uploads/`);
+  });
+}
+
+module.exports = app;
